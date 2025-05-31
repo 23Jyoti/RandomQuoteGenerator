@@ -9,7 +9,7 @@ const QuoteGenerator = () => {
 
   const fetchQuote = (theme = '') => {
     setIsLoading(true);
-    const url = theme ? `http://api.quotable.io/random?tags=${theme}` : 'http://api.quotable.io/random';
+    const url = theme ? `https://api.quotable.io/random?tags=${theme}` : 'https://api.quotable.io/random';
     fetch(url)
       .then(response => response.json())
       .then(data => {
