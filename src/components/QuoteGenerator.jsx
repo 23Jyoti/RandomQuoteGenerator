@@ -5,20 +5,18 @@ const QuoteGenerator = () => {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [theme, setTheme] = useState(''); // State to store the selected theme
 
-  const fetchQuote = (theme = '') => {
+  const fetchQuote = () => {
     setIsLoading(true);
-    const url = theme ? `https://api.quotable.io/random?tags=${theme}` : 'https://api.quotable.io/random';
-    fetch(url)
+    fetch('https://zenquotes.io/api/random')
       .then(response => response.json())
       .then(data => {
-        setQuote(data.content);
-        setAuthor(data.author);
+        setQuote(data[0].q);
+        setAuthor(data[0].a);
         setIsLoading(false);
       })
       .catch(error => {
-        console.error(error);
+        console.error('Error fetching quote:', error);
         setIsLoading(false);
       });
   };
@@ -28,18 +26,12 @@ const QuoteGenerator = () => {
   }, []);
 
   const handleNewQuote = () => {
-    fetchQuote(theme);
-  };
-
-  const handleThemeChange = (event) => {
-    const newTheme = event.target.value;
-    setTheme(newTheme);
-    fetchQuote(newTheme);
+    fetchQuote();
   };
 
   const handleSpeech = () => {
     const synth = window.speechSynthesis;
-    let utterance = new SpeechSynthesisUtterance(`${quote} by ${author}`);
+    const utterance = new SpeechSynthesisUtterance(`${quote} by ${author}`);
     synth.speak(utterance);
   };
 
@@ -48,8 +40,8 @@ const QuoteGenerator = () => {
   };
 
   const handleTwitter = () => {
-    let tweetUrl = `https://twitter.com/intent/tweet?text=${quote} - ${author}`;
-    window.open(tweetUrl, "_blank");
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${quote} - ${author}`;
+    window.open(tweetUrl, '_blank');
   };
 
   return (
@@ -72,15 +64,6 @@ const QuoteGenerator = () => {
             <li className="speech" onClick={handleSpeech}><i className="fas fa-volume-up"></i></li>
             <li className="copy" onClick={handleCopy}><i className="fas fa-copy"></i></li>
             <li className="twitter" onClick={handleTwitter}><i className="fab fa-twitter"></i></li>
-            <li className="filter">
-              <select onChange={handleThemeChange} value={theme}>
-                <option value="">All</option>
-                <option value="inspirational">Inspirational</option>
-                <option value="wisdom">Wisdom</option>
-                <option value="love">Love</option>
-                {/* Add more themes as needed */}
-              </select>
-            </li>
           </ul>
           <button onClick={handleNewQuote} disabled={isLoading}>
             {isLoading ? 'Loading...' : 'New Quote'}
