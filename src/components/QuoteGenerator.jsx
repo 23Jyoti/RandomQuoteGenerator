@@ -5,48 +5,33 @@ const QuoteGenerator = () => {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [quotesArray, setQuotesArray] = useState([]);
 
-  const fetchQuote = () => {
+  const fetchQuotes = () => {
     setIsLoading(true);
-
-    const apiURL = 'https://zenquotes.io/api/random';
-    const proxyURL = `https://api.allorigins.win/get?url=${encodeURIComponent(apiURL)}`;
-
-    fetch(proxyURL)
-      .then(response => {
-        if (!response.ok) throw new Error("Network response was not ok.");
-        return response.json();
-      })
+    fetch('https://type.fit/api/quotes')
+      .then(response => response.json())
       .then(data => {
-        try {
-          const parsed = JSON.parse(data.contents);
-          if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].q && parsed[0].a) {
-            setQuote(parsed[0].q);
-            setAuthor(parsed[0].a);
-          } else {
-            throw new Error("Unexpected quote structure");
-          }
-        } catch (err) {
-          console.error("Error parsing quote:", err);
-          setQuote("Could not load quote.");
-          setAuthor("");
-        }
+        setQuotesArray(data);
+        const random = data[Math.floor(Math.random() * data.length)];
+        setQuote(random.text);
+        setAuthor(random.author || "Unknown");
         setIsLoading(false);
       })
       .catch(error => {
-        console.error("Error fetching quote:", error);
-        setQuote("Failed to fetch quote.");
+        console.error("Error fetching quotes:", error);
+        setQuote("Failed to load quote.");
         setAuthor("");
         setIsLoading(false);
       });
   };
 
-  useEffect(() => {
-    fetchQuote();
-  }, []);
-
   const handleNewQuote = () => {
-    fetchQuote();
+    if (quotesArray.length > 0) {
+      const random = quotesArray[Math.floor(Math.random() * quotesArray.length)];
+      setQuote(random.text);
+      setAuthor(random.author || "Unknown");
+    }
   };
 
   const handleSpeech = () => {
@@ -63,6 +48,10 @@ const QuoteGenerator = () => {
     const tweetUrl = `https://twitter.com/intent/tweet?text=${quote} - ${author}`;
     window.open(tweetUrl, "_blank");
   };
+
+  useEffect(() => {
+    fetchQuotes();
+  }, []);
 
   return (
     <div className="wrapper">
@@ -83,4 +72,15 @@ const QuoteGenerator = () => {
           <ul>
             <li className="speech" onClick={handleSpeech}><i className="fas fa-volume-up"></i></li>
             <li className="copy" onClick={handleCopy}><i className="fas fa-copy"></i></li>
-            <li cl
+            <li className="twitter" onClick={handleTwitter}><i className="fab fa-twitter"></i></li>
+          </ul>
+          <button onClick={handleNewQuote} disabled={isLoading}>
+            {isLoading ? 'Loading...' : 'New Quote'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default QuoteGenerator;
