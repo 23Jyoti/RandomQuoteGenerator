@@ -5,14 +5,23 @@ const QuoteGenerator = () => {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [theme, setTheme] = useState('');
 
   const fetchQuote = () => {
     setIsLoading(true);
-    fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://zenquotes.io/api/random'))
-      .then(response => response.json())
+
+    const apiURL = 'https://zenquotes.io/api/random';
+    const proxyURL = `https://api.allorigins.win/get?url=${encodeURIComponent(apiURL)}`;
+
+    fetch(proxyURL)
+      .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok.");
+        return response.json();
+      })
       .then(data => {
-        setQuote(data[0].q); // q = quote
-        setAuthor(data[0].a); // a = author
+        const parsed = JSON.parse(data.contents);
+        setQuote(parsed[0].q);
+        setAuthor(parsed[0].a);
         setIsLoading(false);
       })
       .catch(error => {
