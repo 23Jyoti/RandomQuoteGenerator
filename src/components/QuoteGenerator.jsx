@@ -11,12 +11,12 @@ const QuoteGenerator = () => {
     fetch('https://zenquotes.io/api/random')
       .then(response => response.json())
       .then(data => {
-        setQuote(data[0].q);
-        setAuthor(data[0].a);
+        setQuote(data[0].q); // q = quote
+        setAuthor(data[0].a); // a = author
         setIsLoading(false);
       })
       .catch(error => {
-        console.error('Error fetching quote:', error);
+        console.error("Error fetching quote:", error);
         setIsLoading(false);
       });
   };
@@ -31,7 +31,7 @@ const QuoteGenerator = () => {
 
   const handleSpeech = () => {
     const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(`${quote} by ${author}`);
+    let utterance = new SpeechSynthesisUtterance(`${quote} by ${author}`);
     synth.speak(utterance);
   };
 
@@ -40,8 +40,8 @@ const QuoteGenerator = () => {
   };
 
   const handleTwitter = () => {
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${quote} - ${author}`;
-    window.open(tweetUrl, '_blank');
+    let tweetUrl = `https://twitter.com/intent/tweet?text=${quote} - ${author}`;
+    window.open(tweetUrl, "_blank");
   };
 
   return (
