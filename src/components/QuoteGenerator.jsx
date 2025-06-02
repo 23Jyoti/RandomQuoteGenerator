@@ -9,21 +9,13 @@ const QuoteGenerator = () => {
 
   const fetchQuotes = () => {
     setIsLoading(true);
-    fetch('https://type.fit/api/quotes')
-      .then(response => response.json())
-      .then(data => {
-        setQuotesArray(data);
-        const random = data[Math.floor(Math.random() * data.length)];
-        setQuote(random.text);
-        setAuthor(random.author || "Unknown");
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.error("Error fetching quotes:", error);
-        setQuote("Failed to load quote.");
-        setAuthor("");
-        setIsLoading(false);
-      });
+    fetch('https://quotes.rest/qod')
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.contents.quotes[0].quote);
+    console.log(data.contents.quotes[0].author);
+  })
+  .catch(console.error);
   };
 
   const handleNewQuote = () => {
