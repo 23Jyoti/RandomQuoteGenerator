@@ -9,7 +9,7 @@ const QuoteGenerator = () => {
 
   const fetchQuotes = () => {
     setIsLoading(true);
-    fetch('https://quotes.rest/qod')
+    fetch('https://quotes.rest/qod') 
   .then(res => res.json())
   .then(data => {
     console.log(data.contents.quotes[0].quote);
