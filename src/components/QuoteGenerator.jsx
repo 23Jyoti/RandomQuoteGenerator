@@ -8,7 +8,7 @@ const QuoteGenerator = () => {
 
   const fetchQuote = () => {
     setIsLoading(true);
-    fetch('https://zenquotes.io/api/random')
+    fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://zenquotes.io/api/random'))
       .then(response => response.json())
       .then(data => {
         setQuote(data[0].q); // q = quote
