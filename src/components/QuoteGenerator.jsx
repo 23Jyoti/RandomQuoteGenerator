@@ -5,7 +5,6 @@ const QuoteGenerator = () => {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [theme, setTheme] = useState('');
 
   const fetchQuote = () => {
     setIsLoading(true);
@@ -19,13 +18,25 @@ const QuoteGenerator = () => {
         return response.json();
       })
       .then(data => {
-        const parsed = JSON.parse(data.contents);
-        setQuote(parsed[0].q);
-        setAuthor(parsed[0].a);
+        try {
+          const parsed = JSON.parse(data.contents);
+          if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].q && parsed[0].a) {
+            setQuote(parsed[0].q);
+            setAuthor(parsed[0].a);
+          } else {
+            throw new Error("Unexpected quote structure");
+          }
+        } catch (err) {
+          console.error("Error parsing quote:", err);
+          setQuote("Could not load quote.");
+          setAuthor("");
+        }
         setIsLoading(false);
       })
       .catch(error => {
         console.error("Error fetching quote:", error);
+        setQuote("Failed to fetch quote.");
+        setAuthor("");
         setIsLoading(false);
       });
   };
@@ -40,7 +51,7 @@ const QuoteGenerator = () => {
 
   const handleSpeech = () => {
     const synth = window.speechSynthesis;
-    let utterance = new SpeechSynthesisUtterance(`${quote} by ${author}`);
+    const utterance = new SpeechSynthesisUtterance(`${quote} by ${author}`);
     synth.speak(utterance);
   };
 
@@ -49,7 +60,7 @@ const QuoteGenerator = () => {
   };
 
   const handleTwitter = () => {
-    let tweetUrl = `https://twitter.com/intent/tweet?text=${quote} - ${author}`;
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${quote} - ${author}`;
     window.open(tweetUrl, "_blank");
   };
 
@@ -72,15 +83,4 @@ const QuoteGenerator = () => {
           <ul>
             <li className="speech" onClick={handleSpeech}><i className="fas fa-volume-up"></i></li>
             <li className="copy" onClick={handleCopy}><i className="fas fa-copy"></i></li>
-            <li className="twitter" onClick={handleTwitter}><i className="fab fa-twitter"></i></li>
-          </ul>
-          <button onClick={handleNewQuote} disabled={isLoading}>
-            {isLoading ? 'Loading...' : 'New Quote'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default QuoteGenerator;
+            <li cl
