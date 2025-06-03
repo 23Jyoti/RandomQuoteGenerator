@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import quotesData from '../quotes.json';
 import '../App.css';
 
 const QuoteGenerator = () => {
@@ -6,27 +7,36 @@ const QuoteGenerator = () => {
   const [author, setAuthor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchQuote = () => {
-    setIsLoading(true);
-    fetch('/api/quote')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.length > 0) {
-          setQuote(data[0].q);
-          setAuthor(data[0].a);
-        } else {
-          setQuote('No quote found.');
-          setAuthor('Unknown');
-        }
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching quote:', error);
-        setQuote('Failed to fetch quote.');
-        setAuthor('');
-        setIsLoading(false);
-      });
+    const getRandomLocalQuote = () => {
+    const randomIndex = Math.floor(Math.random() * quotesData.length);
+    return quotesData[randomIndex];
   };
+    const fetchQuote = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/quote'); 
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setQuote(data[0].q || 'No quote content');
+        setAuthor(data[0].a || 'Unknown');
+      } else {
+        const fallbackQuote = getRandomLocalQuote();
+        setQuote(fallbackQuote.q);
+        setAuthor(fallbackQuote.a);
+      }
+    } catch (error) {
+      console.error('Error fetching quote:', error);
+      const fallbackQuote = getRandomLocalQuote();
+      setQuote(fallbackQuote.q);
+      setAuthor(fallbackQuote.a);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   const handleNewQuote = () => {
     fetchQuote();
