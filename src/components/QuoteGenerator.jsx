@@ -7,26 +7,22 @@ const QuoteGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchQuote = () => {
-    setIsLoading(true);
-    fetch('https://zenquotes.io/api/random')
-      .then(response => response.json())
-      .then(data => {
-        if (data && data.length > 0) {
-          setQuote(data[0].q);
-          setAuthor(data[0].a);
-        } else {
-          setQuote('No quote found.');
-          setAuthor('Unknown');
-        }
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching quote:', error);
-        setQuote('Failed to fetch quote.');
-        setAuthor('');
-        setIsLoading(false);
-      });
-  };
+  setIsLoading(true);
+  fetch('https://api.allorigins.hexlet.app/get?url=' + encodeURIComponent('https://zenquotes.io/api/random'))
+    .then(res => res.json())
+    .then(data => {
+      const parsedData = JSON.parse(data.contents);
+      setQuote(parsedData[0].q);
+      setAuthor(parsedData[0].a);
+      setIsLoading(false);
+    })
+    .catch(err => {
+      console.error('Error fetching quote:', err);
+      setQuote('Failed to fetch quote.');
+      setAuthor('');
+      setIsLoading(false);
+    });
+};
 
   const handleNewQuote = () => {
     fetchQuote();
