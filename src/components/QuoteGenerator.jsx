@@ -5,25 +5,31 @@ const QuoteGenerator = () => {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [quotesArray, setQuotesArray] = useState([]);
 
-  const fetchQuotes = () => {
+  const fetchQuote = () => {
     setIsLoading(true);
-    fetch('https://quotes.rest/qod') 
-  .then(res => res.json())
-  .then(data => {
-    console.log(data.contents.quotes[0].quote);
-    console.log(data.contents.quotes[0].author);
-  })
-  .catch(console.error);
+    fetch('https://zenquotes.io/api/random')
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setQuote(data[0].q);
+          setAuthor(data[0].a);
+        } else {
+          setQuote('No quote found.');
+          setAuthor('Unknown');
+        }
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching quote:', error);
+        setQuote('Failed to fetch quote.');
+        setAuthor('');
+        setIsLoading(false);
+      });
   };
 
   const handleNewQuote = () => {
-    if (quotesArray.length > 0) {
-      const random = quotesArray[Math.floor(Math.random() * quotesArray.length)];
-      setQuote(random.text);
-      setAuthor(random.author || "Unknown");
-    }
+    fetchQuote();
   };
 
   const handleSpeech = () => {
@@ -42,7 +48,7 @@ const QuoteGenerator = () => {
   };
 
   useEffect(() => {
-    fetchQuotes();
+    fetchQuote();
   }, []);
 
   return (
