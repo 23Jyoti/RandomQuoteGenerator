@@ -7,22 +7,26 @@ const QuoteGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchQuote = () => {
-  setIsLoading(true);
-  fetch('https://api.allorigins.hexlet.app/get?url=' + encodeURIComponent('https://zenquotes.io/api/random'))
-    .then(res => res.json())
-    .then(data => {
-      const parsedData = JSON.parse(data.contents);
-      setQuote(parsedData[0].q);
-      setAuthor(parsedData[0].a);
-      setIsLoading(false);
-    })
-    .catch(err => {
-      console.error('Error fetching quote:', err);
-      setQuote('Failed to fetch quote.');
-      setAuthor('');
-      setIsLoading(false);
-    });
-};
+    setIsLoading(true);
+    fetch('/api/quote')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setQuote(data[0].q);
+          setAuthor(data[0].a);
+        } else {
+          setQuote('No quote found.');
+          setAuthor('Unknown');
+        }
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching quote:', error);
+        setQuote('Failed to fetch quote.');
+        setAuthor('');
+        setIsLoading(false);
+      });
+  };
 
   const handleNewQuote = () => {
     fetchQuote();
@@ -39,7 +43,9 @@ const QuoteGenerator = () => {
   };
 
   const handleTwitter = () => {
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${quote} - ${author}`;
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      `${quote} - ${author}`
+    )}`;
     window.open(tweetUrl, "_blank");
   };
 
@@ -64,9 +70,15 @@ const QuoteGenerator = () => {
       <div className="buttons">
         <div className="features">
           <ul>
-            <li className="speech" onClick={handleSpeech}><i className="fas fa-volume-up"></i></li>
-            <li className="copy" onClick={handleCopy}><i className="fas fa-copy"></i></li>
-            <li className="twitter" onClick={handleTwitter}><i className="fab fa-twitter"></i></li>
+            <li className="speech" onClick={handleSpeech}>
+              <i className="fas fa-volume-up"></i>
+            </li>
+            <li className="copy" onClick={handleCopy}>
+              <i className="fas fa-copy"></i>
+            </li>
+            <li className="twitter" onClick={handleTwitter}>
+              <i className="fab fa-twitter"></i>
+            </li>
           </ul>
           <button onClick={handleNewQuote} disabled={isLoading}>
             {isLoading ? 'Loading...' : 'New Quote'}
