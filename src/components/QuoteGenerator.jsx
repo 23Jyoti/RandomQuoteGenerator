@@ -69,7 +69,7 @@ const QuoteGenerator = () => {
       <div className="content">
         <div className="quote-area">
           <i className="fas fa-quote-left"></i>
-          <p style={{ wordBreak: "keep-all", whiteSpace: "normal", overflowWrap: "break-word" }}>{quote}</p>
+          <p>{quote}</p>
           <i className="fas fa-quote-right"></i>
         </div>
         <div className="author">
