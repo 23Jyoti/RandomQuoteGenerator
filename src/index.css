@@ -74,7 +74,8 @@ header,
 .quote-area .quote {
   font-size: 22px;
   text-align: center;
-  word-break: break-all;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .content .author {
@@ -149,10 +150,6 @@ ul .speech.active {
   pointer-events: none;
 }
 
-/* Add this CSS to your index.css or a suitable CSS file */
-
-/* Add this CSS to your index.css or a suitable CSS file */
-
 .filter {
   margin: 0 5px;
   height: 47px;
@@ -166,7 +163,7 @@ ul .speech.active {
   justify-content: center;
   border: 2px solid #000000;
   transition: all 0.3s ease;
-  position: relative; /* To position the select properly */
+  position: relative; 
 }
 
 .filter select {
